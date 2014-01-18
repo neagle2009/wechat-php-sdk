@@ -5,10 +5,10 @@
  * @author NetPuter <netputer@gmail.com>
  */
 
-  /**
-   * 微信公众平台处理类
-   */
-  class Wechat {
+/**
+ * 微信公众平台处理类
+ */
+class Wechat {
 
     /**
      * 调试模式，将错误通过文本消息回复显示
@@ -31,27 +31,27 @@
      * @param boolean $debug 调试模式，默认为关闭
      */
     public function __construct($token, $debug = FALSE) {
-      if (!$this->validateSignature($token)) {
-        exit('签名验证失败');
-      }
-      
-      if ($this->isValid()) {
-        // 网址接入验证
-        exit($_GET['echostr']);
-      }
-      
-      if (!isset($GLOBALS['HTTP_RAW_POST_DATA'])) {
-        exit('缺少数据');
-      }
+        if (!$this->validateSignature($token)) {
+            exit('签名验证失败');
+        }
 
-      $this->debug = $debug;
-      set_error_handler(array(&$this, 'errorHandler'));
-      // 设置错误处理函数，将错误通过文本消息回复显示
+        if ($this->isValid()) {
+            // 网址接入验证
+            exit($_GET['echostr']);
+        }
 
-      $xml = (array) simplexml_load_string($GLOBALS['HTTP_RAW_POST_DATA'], 'SimpleXMLElement', LIBXML_NOCDATA);
+        if (!isset($GLOBALS['HTTP_RAW_POST_DATA'])) {
+            exit('缺少数据');
+        }
 
-      $this->request = array_change_key_case($xml, CASE_LOWER);
-      // 将数组键名转换为小写，提高健壮性，减少因大小写不同而出现的问题
+        $this->debug = $debug;
+        set_error_handler(array(&$this, 'errorHandler'));
+        // 设置错误处理函数，将错误通过文本消息回复显示
+
+        $xml = (array) simplexml_load_string($GLOBALS['HTTP_RAW_POST_DATA'], 'SimpleXMLElement', LIBXML_NOCDATA);
+
+        $this->request = array_change_key_case($xml, CASE_LOWER);
+        // 将数组键名转换为小写，提高健壮性，减少因大小写不同而出现的问题
     }
 
     /**
@@ -60,7 +60,7 @@
      * @return boolean
      */
     private function isValid() {
-      return isset($_GET['echostr']);
+        return isset($_GET['echostr']);
     }
 
     /**
@@ -70,18 +70,18 @@
      * @return boolean
      */
     private function validateSignature($token) {
-      if ( ! (isset($_GET['signature']) && isset($_GET['timestamp']) && isset($_GET['nonce']))) {
-        return FALSE;
-      }
-      
-      $signature = $_GET['signature'];
-      $timestamp = $_GET['timestamp'];
-      $nonce = $_GET['nonce'];
+        if ( ! (isset($_GET['signature']) && isset($_GET['timestamp']) && isset($_GET['nonce']))) {
+            return FALSE;
+        }
 
-      $signatureArray = array($token, $timestamp, $nonce);
-      sort($signatureArray);
+        $signature = $_GET['signature'];
+        $timestamp = $_GET['timestamp'];
+        $nonce = $_GET['nonce'];
 
-      return sha1(implode($signatureArray)) == $signature;
+        $signatureArray = array($token, $timestamp, $nonce);
+        sort($signatureArray);
+
+        return sha1(implode($signatureArray)) == $signature;
     }
 
     /**
@@ -91,17 +91,17 @@
      * @return mixed
      */
     protected function getRequest($param = FALSE) {
-      if ($param === FALSE) {
-        return $this->request;
-      }
+        if ($param === FALSE) {
+            return $this->request;
+        }
 
-      $param = strtolower($param);
+        $param = strtolower($param);
 
-      if (isset($this->request[$param])) {
-        return $this->request[$param];
-      }
+        if (isset($this->request[$param])) {
+            return $this->request[$param];
+        }
 
-      return NULL;
+        return NULL;
     }
 
     /**
@@ -189,7 +189,7 @@
      * @return void
      */
     protected function responseText($content, $funcFlag = 0) {
-      exit(new TextResponse($this->getRequest('fromusername'), $this->getRequest('tousername'), $content, $funcFlag));
+        exit(new TextResponse($this->getRequest('fromusername'), $this->getRequest('tousername'), $content, $funcFlag));
     }
 
     /**
@@ -203,7 +203,7 @@
      * @return void
      */
     protected function responseMusic($title, $description, $musicUrl, $hqMusicUrl, $funcFlag = 0) {
-      exit(new MusicResponse($this->getRequest('fromusername'), $this->getRequest('tousername'), $title, $description, $musicUrl, $hqMusicUrl, $funcFlag));
+        exit(new MusicResponse($this->getRequest('fromusername'), $this->getRequest('tousername'), $title, $description, $musicUrl, $hqMusicUrl, $funcFlag));
     }
 
     /**
@@ -213,7 +213,7 @@
      * @return void
      */
     protected function responseNews($items, $funcFlag = 0) {
-      exit(new NewsResponse($this->getRequest('fromusername'), $this->getRequest('tousername'), $items, $funcFlag));
+        exit(new NewsResponse($this->getRequest('fromusername'), $this->getRequest('tousername'), $items, $funcFlag));
     }
 
     /**
@@ -222,60 +222,60 @@
      * @return void
      */
     public function run() {
-      switch ($this->getRequest('msgtype')) {
+        switch ($this->getRequest('msgtype')) {
 
-        case 'event':
-          switch ($this->getRequest('event')) {
+            case 'event':
+                switch ($this->getRequest('event')) {
 
-            case 'subscribe':
-              $this->onSubscribe();
-              break;
+                    case 'subscribe':
+                        $this->onSubscribe();
+                        break;
 
-            case 'unsubscribe':
-              $this->onUnsubscribe();
-              break;
+                    case 'unsubscribe':
+                        $this->onUnsubscribe();
+                        break;
 
-            case 'SCAN':
-              $this->onScan();
-              break;
+                    case 'SCAN':
+                        $this->onScan();
+                        break;
 
-            case 'LOCATION':
-              $this->onEventLocation();
-              break;
+                    case 'LOCATION':
+                        $this->onEventLocation();
+                        break;
 
-            case 'CLICK':
-              $this->onClick();
-              break;
+                    case 'CLICK':
+                        $this->onClick();
+                        break;
 
-          }
+                }
 
-          break;
+                break;
 
-        case 'text':
-          $this->onText();
-          break;
+            case 'text':
+                $this->onText();
+                break;
 
-        case 'image':
-          $this->onImage();
-          break;
+            case 'image':
+                $this->onImage();
+                break;
 
-        case 'location':
-          $this->onLocation();
-          break;
+            case 'location':
+                $this->onLocation();
+                break;
 
-        case 'link':
-          $this->onLink();
-          break;
+            case 'link':
+                $this->onLink();
+                break;
 
-        case 'voice':
-          $this->onVoice();
-          break;
+            case 'voice':
+                $this->onVoice();
+                break;
 
-        default:
-          $this->onUnknown();
-          break;
+            default:
+                $this->onUnknown();
+                break;
 
-      }
+        }
     }
 
     /**
@@ -287,27 +287,27 @@
      * @return void
      */
     protected function errorHandler($level, $msg, $file, $line) {
-      if ( ! $this->debug) {
-        return;
-      }
+        if ( ! $this->debug) {
+            return;
+        }
 
-      $error_type = array(
-        // E_ERROR             => 'Error',
-        E_WARNING           => 'Warning',
-        // E_PARSE             => 'Parse Error',
-        E_NOTICE            => 'Notice',
-        // E_CORE_ERROR        => 'Core Error',
-        // E_CORE_WARNING      => 'Core Warning',
-        // E_COMPILE_ERROR     => 'Compile Error',
-        // E_COMPILE_WARNING   => 'Compile Warning',
-        E_USER_ERROR        => 'User Error',
-        E_USER_WARNING      => 'User Warning',
-        E_USER_NOTICE       => 'User Notice',
-        E_STRICT            => 'Strict',
-        E_RECOVERABLE_ERROR => 'Recoverable Error',
-        E_DEPRECATED        => 'Deprecated',
-        E_USER_DEPRECATED   => 'User Deprecated',
-      );
+        $error_type = array(
+                // E_ERROR             => 'Error',
+                E_WARNING           => 'Warning',
+                // E_PARSE             => 'Parse Error',
+                E_NOTICE            => 'Notice',
+                // E_CORE_ERROR        => 'Core Error',
+                // E_CORE_WARNING      => 'Core Warning',
+                // E_COMPILE_ERROR     => 'Compile Error',
+                // E_COMPILE_WARNING   => 'Compile Warning',
+                E_USER_ERROR        => 'User Error',
+                E_USER_WARNING      => 'User Warning',
+                E_USER_NOTICE       => 'User Notice',
+                E_STRICT            => 'Strict',
+                E_RECOVERABLE_ERROR => 'Recoverable Error',
+                E_DEPRECATED        => 'Deprecated',
+                E_USER_DEPRECATED   => 'User Deprecated',
+                );
 
       $template = <<<ERR
 PHP 报错啦！
@@ -318,19 +318,19 @@ Line: %s
 ERR;
 
       $this->responseText(sprintf($template,
-        $error_type[$level],
-        $msg,
-        $file,
-        $line
-      ));
+                  $error_type[$level],
+                  $msg,
+                  $file,
+                  $line
+                  ));
     }
 
-  }
+}
 
-  /**
-   * 用于回复的基本消息类型
-   */
-  abstract class WechatResponse {
+/**
+ * 用于回复的基本消息类型
+ */
+abstract class WechatResponse {
 
     protected $toUserName;
     protected $fromUserName;
@@ -338,27 +338,27 @@ ERR;
     protected $template;
 
     public function __construct($toUserName, $fromUserName, $funcFlag) {
-      $this->toUserName = $toUserName;
-      $this->fromUserName = $fromUserName;
-      $this->funcFlag = $funcFlag;
+        $this->toUserName = $toUserName;
+        $this->fromUserName = $fromUserName;
+        $this->funcFlag = $funcFlag;
     }
 
     abstract public function __toString();
 
-  }
+}
 
-  /**
-   * 用于回复的文本消息类型
-   */
-  class TextResponse extends WechatResponse {
+/**
+ * 用于回复的文本消息类型
+ */
+class TextResponse extends WechatResponse {
 
     protected $content;
 
     public function __construct($toUserName, $fromUserName, $content, $funcFlag = 0) {
-      parent::__construct($toUserName, $fromUserName, $funcFlag);
+        parent::__construct($toUserName, $fromUserName, $funcFlag);
 
-      $this->content = $content;
-      $this->template = <<<XML
+        $this->content = $content;
+        $this->template = <<<XML
 <xml>
   <ToUserName><![CDATA[%s]]></ToUserName>
   <FromUserName><![CDATA[%s]]></FromUserName>
@@ -371,21 +371,21 @@ XML;
     }
 
     public function __toString() {
-      return sprintf($this->template,
-        $this->toUserName,
-        $this->fromUserName,
-        time(),
-        $this->content,
-        $this->funcFlag
-      );
+        return sprintf($this->template,
+                $this->toUserName,
+                $this->fromUserName,
+                time(),
+                $this->content,
+                $this->funcFlag
+                );
     }
 
   }
 
-  /**
-   * 用于回复的音乐消息类型
-   */
-  class MusicResponse extends WechatResponse {
+/**
+ * 用于回复的音乐消息类型
+ */
+class MusicResponse extends WechatResponse {
 
     protected $title;
     protected $description;
@@ -393,13 +393,13 @@ XML;
     protected $hqMusicUrl;
 
     public function __construct($toUserName, $fromUserName, $title, $description, $musicUrl, $hqMusicUrl, $funcFlag) {
-      parent::__construct($toUserName, $fromUserName, $funcFlag);
+        parent::__construct($toUserName, $fromUserName, $funcFlag);
 
-      $this->title = $title;
-      $this->description = $description;
-      $this->musicUrl = $musicUrl;
-      $this->hqMusicUrl = $hqMusicUrl;
-      $this->template = <<<XML
+        $this->title = $title;
+        $this->description = $description;
+        $this->musicUrl = $musicUrl;
+        $this->hqMusicUrl = $hqMusicUrl;
+        $this->template = <<<XML
 <xml>
   <ToUserName><![CDATA[%s]]></ToUserName>
   <FromUserName><![CDATA[%s]]></FromUserName>
@@ -417,32 +417,32 @@ XML;
     }
 
     public function __toString() {
-      return sprintf($this->template,
-        $this->toUserName,
-        $this->fromUserName,
-        time(),
-        $this->title,
-        $this->description,
-        $this->musicUrl,
-        $this->hqMusicUrl,
-        $this->funcFlag
-      );
+        return sprintf($this->template,
+                $this->toUserName,
+                $this->fromUserName,
+                time(),
+                $this->title,
+                $this->description,
+                $this->musicUrl,
+                $this->hqMusicUrl,
+                $this->funcFlag
+                );
     }
 
   }
 
-  /**
-   * 用于回复的图文消息类型
-   */
-  class NewsResponse extends WechatResponse {
+/**
+ * 用于回复的图文消息类型
+ */
+class NewsResponse extends WechatResponse {
 
     protected $items = array();
 
     public function __construct($toUserName, $fromUserName, $items, $funcFlag) {
-      parent::__construct($toUserName, $fromUserName, $funcFlag);
+        parent::__construct($toUserName, $fromUserName, $funcFlag);
 
-      $this->items = $items;
-      $this->template = <<<XML
+        $this->items = $items;
+        $this->template = <<<XML
 <xml>
   <ToUserName><![CDATA[%s]]></ToUserName>
   <FromUserName><![CDATA[%s]]></FromUserName>
@@ -458,22 +458,22 @@ XML;
     }
 
     public function __toString() {
-      return sprintf($this->template,
-        $this->toUserName,
-        $this->fromUserName,
-        time(),
-        count($this->items),
-        implode($this->items),
-        $this->funcFlag
-      );
+        return sprintf($this->template,
+                $this->toUserName,
+                $this->fromUserName,
+                time(),
+                count($this->items),
+                implode($this->items),
+                $this->funcFlag
+                );
     }
 
   }
 
-  /**
-   * 单条图文消息类型
-   */
-  class NewsResponseItem {
+/**
+ * 单条图文消息类型
+ */
+class NewsResponseItem {
 
     protected $title;
     protected $description;
@@ -482,11 +482,11 @@ XML;
     protected $template;
 
     public function __construct($title, $description, $picUrl, $url) {
-      $this->title = $title;
-      $this->description = $description;
-      $this->picUrl = $picUrl;
-      $this->url = $url;
-      $this->template = <<<XML
+        $this->title = $title;
+        $this->description = $description;
+        $this->picUrl = $picUrl;
+        $this->url = $url;
+        $this->template = <<<XML
 <item>
   <Title><![CDATA[%s]]></Title>
   <Description><![CDATA[%s]]></Description>
@@ -497,12 +497,12 @@ XML;
     }
 
     public function __toString() {
-      return sprintf($this->template,
-        $this->title,
-        $this->description,
-        $this->picUrl,
-        $this->url
-      );
+        return sprintf($this->template,
+                $this->title,
+                $this->description,
+                $this->picUrl,
+                $this->url
+                );
     }
 
   }
